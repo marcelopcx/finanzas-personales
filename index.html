@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestión de Transacciones</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<!-- Contenedor principal -->
+<div class="container">
+
+  <!-- Header con selección de Año y Mes -->
+  <header class="header">
+    <div class="header-left">
+      <h1>Año:
+        <input
+                type="number"
+                id="yearInput"
+                value="2025"
+                min="2020"
+                max="2035"
+                class="year-input month-select"
+        />
+      </h1>
+    </div>
+    <div class="header-right">
+      <h2>
+        <select id="monthInput" class="month-select">
+          <option value="" disabled selected>Elige un Mes</option>
+          <option value="01">Enero</option>
+          <option value="02">Febrero</option>
+          <option value="03">Marzo</option>
+          <option value="04">Abril</option>
+          <option value="05">Mayo</option>
+          <option value="06">Junio</option>
+          <option value="07">Julio</option>
+          <option value="08">Agosto</option>
+          <option value="09">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
+      </h2>
+    </div>
+  </header>
+
+  <!-- Sección principal (lado izquierdo y lado derecho) -->
+  <main class="main-content">
+    <!-- Lado izquierdo: Transacciones, Estimados, Vs -->
+    <section class="transactions-panel">
+      <div class="transactions-panel-header">
+        <nav>
+          <button id="transacciones" class="tab active">Transacciones</button>
+          <button id="estimados" class="tab">Estimados</button>
+          <button id="comparacion" class="tab">Comparación</button>
+        </nav>
+        <div class="filter-selects">
+          <!-- Filtro de tipo -->
+          <h4 class="type-select">Tipo: </h4>
+          <select id="typeSelect" class="type-select">
+            <option value="All">Todos</option>
+            <option value="Ingresos">Ingresos</option>
+            <option value="Gastos">Gastos</option>
+          </select>
+
+          <!-- Filtro de categoría -->
+          <h4 class="category-select">Categoría: </h4>
+          <select id="categorySelect" class="category-select">
+            <option value="All">Todo</option>
+            <!-- Se llenará dinámicamente con loadCategories() -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Contenedor para la lista de Transacciones -->
+      <div id="view-transacciones" class="view-content">
+        <table class="transaction-table">
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Categoría</th>
+            <th>Monto</th>
+            <th>Acción</th>
+          </tr>
+          </thead>
+          <tbody id="transaction">
+          <!-- Aquí se inyectan las filas dinámicamente -->
+          </tbody>
+        </table>
+
+        <!-- Total de operaciones -->
+        <p id="numberTransactions" class="total-operations">
+          Total de operaciones: 0
+        </p>
+      </div>
+
+      <!-- Contenedor para la lista de Estimados -->
+      <div id="view-estimados" class="view-content hide">
+        <table class="transaction-table">
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Categoría</th>
+            <th>Monto</th>
+            <th>Acción</th>
+          </tr>
+          </thead>
+          <tbody id="estimated">
+          <!-- Aquí se inyectan las filas dinámicamente -->
+          </tbody>
+        </table>
+
+        <!-- Total de operaciones -->
+        <p id="numberEstimated" class="total-operations" >
+          Total de operaciones: 0
+        </p>
+      </div>
+
+      <!-- Contenedor para la vista Vs -->
+      <div id="view-vs" class="view-content hide">
+        <table class="transaction-table">
+          <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Gasto Estimado</th>
+            <th>Gasto Real</th>
+            <th>Diferencia</th>
+          </tr>
+          </thead>
+          <tbody id="vsTableBody">
+          <!-- Se inyectarán las filas dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- Lado derecho: Resumen + Nueva Transacción -->
+    <aside class="right-panel">
+      <!-- Resumen de Transacciones-->
+      <div id="resumeTransaction" class="view-content">
+        <div class="resumen">
+          <h3>Resumen de Transacciones</h3>
+          <p id="revenue">Ingresos: 0.00</p>
+          <p id="expenditure">Gastos: 0.00</p>
+          <p id="available">Disponible: 0.00</p>
+        </div>
+      </div>
+
+      <!-- Resumen de Gatos Estimados-->
+      <div id="resumeEstimated" class="view-content hide">
+        <div class="resumen">
+          <h3>Resumen de Gatos Estimados</h3>
+          <div id="estimatedSummary">
+            <!-- Aquí se mostrará la lista de montos estimados por cada categoría -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen de Comparación Vs -->
+      <div id="resumeVs" class="view-content hide">
+        <div class="resumen">
+          <h3>Resumen de Comparación</h3>
+          <p id="estimatedTotal">Total estimado: 0.00$</p>
+          <p id="actualTotal">Total real: 0.00$</p>
+          <p id="difference">Diferencia: 0.00$</p>
+        </div>
+      </div>
+
+
+      <!-- Nueva Transacción -->
+      <div class="new-transaction">
+        <h3>Nueva Transacción</h3>
+        <div class="form-group">
+          <label for="typeInputTransaction">Tipo:</label>
+          <select id="typeInputTransaction">
+            <option value="" disabled selected>Seleccione un tipo</option>
+            <option value="Ingresos">Ingresos</option>
+            <option value="Gastos">Gastos</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="categoryInputTransaction">Categoría:</label>
+          <select id="categoryInputTransaction">
+            <!-- Se llenará dinámicamente con loadCategories() -->
+            <option value="" disabled selected>Seleccione una Categoría</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dateInputTransaction">Fecha:</label>
+          <input type="date" id="dateInputTransaction" />
+        </div>
+        <div class="form-group">
+          <label for="amountInputTransaction">Monto:</label>
+          <input type="number" step="0.01" id="amountInputTransaction" />
+        </div>
+        <button id="addBtnTransaction" class="add-btn" disabled>Agregar</button>
+      </div>
+
+      <!-- Nueva Gasto Estimado -->
+      <div class="new-estimated hide">
+        <h3>Nuevo Gasto Estimado</h3>
+        <div class="form-group">
+          <label for="categoryInputEstimated">Categoría:</label>
+          <select id="categoryInputEstimated">
+            <!-- Se llenará dinámicamente con loadCategories() -->
+            <option value="" disabled selected>Seleccione una Categoría</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dateInputEstimated">Fecha:</label>
+          <input type="date" id="dateInputEstimated" />
+        </div>
+        <div class="form-group">
+          <label for="amountInputEstimated">Monto:</label>
+          <input type="number" step="0.01" id="amountInputEstimated" />
+        </div>
+        <button id="addBtnEstimated" class="add-btn" disabled>Agregar</button>
+      </div>
+
+      <div id="chart" class="form-group view-content hide">
+        <!-- Canvas para la gráfica -->
+        <canvas id="comparisonChart" class="comparisonChart hide" style="max-width: 100%; height:300px;"></canvas>
+      </div>
+      <!-- Nueva Transacción -->
+      <div class="new-category">
+        <h3>Nueva Categoría</h3>
+        <div class="form-group">
+          <label for="addCategory">Nombre:</label>
+          <input type="text" id="addCategory" />
+        </div>
+        <button id="addBtnCategory" class="add-btn" disabled>Agregar</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<!-- Tu archivo JS con la lógica IndexedDB -->
+<script src="chart.js"></script>
+<script src="transactions.js"></script>
+<script src="estimates.js"></script>
+<script src="vs.js"></script>
+<script src="init.js"></script>
+
+</body>
+</html>
